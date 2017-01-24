@@ -1,22 +1,22 @@
 {
-  "name": "webpack-chrome-dev-plugin",
+  "name": "chrome-dev-webpack-plugin",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js ./",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha test"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/slawo_c/webpack-chrome-dev-plugin.git"
+    "url": "git+ssh://git@gitlab.com/slawo_c/chrome-dev-webpack-plugin.git"
   },
   "author": "Slawomir CALUCH",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/slawo_c/webpack-chrome-dev-plugin/issues"
+    "url": "https://gitlab.com/slawo_c/chrome-dev-webpack-plugin/issues"
   },
-  "homepage": "https://gitlab.com/slawo_c/webpack-chrome-dev-plugin#README",
+  "homepage": "https://gitlab.com/slawo_c/chrome-dev-webpack-plugin#README",
   "devDependencies": {
   },
   "peerDependencies": {

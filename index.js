@@ -1,5 +1,5 @@
 /**
- * @module webpack-chrome-dev-plugin
+ * @module chrome-dev-webpack-plugin
  */
 
 "use strict";
@@ -23,7 +23,7 @@ const manifestMandatory = ["name", "version", "manifest_version"];
  * @param {function} [options.log=console.log] A log function.
  * @param {function} [options.error=console.error] An error log function.
  */
-var WebpackChromeDevPlugin = module.exports = function WebpackChromeDevPlugin(options) {
+var ChromeDevWebpackPlugin = module.exports = function ChromeDevWebpackPlugin(options) {
   options = options || {};
   /*eslint-disable no-console */
   this.log = options.log || console.log;
@@ -51,7 +51,7 @@ var WebpackChromeDevPlugin = module.exports = function WebpackChromeDevPlugin(op
  *
  * @param {webpack.Compiler} compiler
  */
-WebpackChromeDevPlugin.prototype.apply = function(compiler) {
+ChromeDevWebpackPlugin.prototype.apply = function(compiler) {
   //Used to retrieve the latest source of the manifest file.
   this.actions = [];
   this.manifestSourceFunction = null;
@@ -68,7 +68,7 @@ WebpackChromeDevPlugin.prototype.apply = function(compiler) {
  * @param {webpack.Compilation} compilation
  * @param {function} callback
  */
-WebpackChromeDevPlugin.prototype.handleEmit = function(compilation, callback) {
+ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
   this.log("handleEmit");
   var self = this;
 
@@ -99,7 +99,7 @@ WebpackChromeDevPlugin.prototype.handleEmit = function(compilation, callback) {
  * @param {webpack.Compilation} compilation
  * @returns
  */
-WebpackChromeDevPlugin.prototype.initialize = function(compilation) {
+ChromeDevWebpackPlugin.prototype.initialize = function(compilation) {
   var self = this;
   self.log("initialize", compilation);
   return new Promise(function (resolve, reject) {
@@ -130,7 +130,7 @@ WebpackChromeDevPlugin.prototype.initialize = function(compilation) {
   });
 };
 
-WebpackChromeDevPlugin.prototype.updateManifestJson = function() {
+ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
   var self = this;
   self.log("updateManifestJson");
 
@@ -200,7 +200,7 @@ WebpackChromeDevPlugin.prototype.updateManifestJson = function() {
   .then(syncManifest);
 };
 
-WebpackChromeDevPlugin.prototype.emitManifestJson = function(compilation) {
+ChromeDevWebpackPlugin.prototype.emitManifestJson = function(compilation) {
   var self = this;
   var manifestJsonData = JSON.stringify(self.manifestJson, null, "  ");
   return compilation.assets[self.manifestOutput] = {
@@ -220,7 +220,7 @@ WebpackChromeDevPlugin.prototype.emitManifestJson = function(compilation) {
  * @param {webpack.Compilation} compilation
  * @returns Promise<object>
  */
-WebpackChromeDevPlugin.prototype.runPluginRound = function(compilation) {
+ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
   var self = this;
   return self.updateManifestJson().then(function (manifestJson) {
     self.manifestJson = manifestJson || self.manifestJson;
