@@ -18,5 +18,8 @@
   },
   "homepage": "https://gitlab.com/slawo_c/webpack-chrome-dev-plugin#README",
   "devDependencies": {
+  },
+  "peerDependencies": {
+    "webpack": "1 || ^2 || ^2.1.0-beta || ^2.2.0-rc"
   }
 }
