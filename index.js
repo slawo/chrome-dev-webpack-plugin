@@ -101,7 +101,7 @@ ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
  */
 ChromeDevWebpackPlugin.prototype.initialize = function(compilation) {
   var self = this;
-  self.log("initialize", compilation);
+  self.log("initialize");
   return new Promise(function (resolve, reject) {
 
     self.log("self.manifestOutput", self.manifestOutput);
