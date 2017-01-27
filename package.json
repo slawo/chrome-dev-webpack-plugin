@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/slawo_c/chrome-dev-webpack-plugin.git"
+    "url": "git+ssh://git@github.com:slawo/chrome-dev-webpack-plugin.git"
   },
   "author": "Slawomir CALUCH",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/slawo_c/chrome-dev-webpack-plugin/issues"
+    "url": "https://github.com/slawo/chrome-dev-webpack-plugin/issues"
   },
-  "homepage": "https://gitlab.com/slawo_c/chrome-dev-webpack-plugin#README",
+  "homepage": "https://github.com/slawo/chrome-dev-webpack-plugin#README",
   "files": [
     "index.js"
   ],
