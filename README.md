@@ -1,6 +1,6 @@
 # Chrome development plugin for webpack
 
-Adds chrome related development features to webpack. Helps generating manifest.json.
+Adds chrome related development features to webpack. Helps with generating and synchronizing the manifest.json.
 
 ## Why?
 For every chrome extension (standalone or paired with a web application) the same tasks are required and the same issues with version synchronization arise.
