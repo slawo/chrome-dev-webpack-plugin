@@ -4,6 +4,7 @@
 
 "use strict";
 var fs = require("fs");
+var path = require("path");
 
 /**
  * The list of fields that are mandatory in a manifest.json.
@@ -20,13 +21,15 @@ const manifestMandatory = ["name", "version", "manifest_version"];
  * @param {string} [options.package="./package.json"] The path to the package.json file
  * @param {Array} [options.fields=["version"]] The list of fields to copy from package.json to the resulting manifest.json.
  *
- * @param {function} [options.log=console.log] A log function.
+ * @param {function} [options.log] A log function.
+ * @param {function} [options.warn=console.warn] A warning log function.
  * @param {function} [options.error=console.error] An error log function.
  */
 var ChromeDevWebpackPlugin = module.exports = function ChromeDevWebpackPlugin(options) {
   options = options || {};
   /*eslint-disable no-console */
-  this.log = options.log || console.log;
+  this.log = options.log || function() {};
+  this.warn = options.warn || console.warn;
   this.error = options.error || console.error;
   /*eslint-enable no-console */
 
@@ -58,6 +61,10 @@ ChromeDevWebpackPlugin.prototype.apply = function(compiler) {
   this.manifestJson = null;
   this.initialized = false;
 
+  this.context = compiler.options.context || path.resolve("./");
+
+  console.log("this.context:", this.context);
+
   //Adds handlers
   compiler.plugin("emit", this.handleEmit.bind(this));
 };
@@ -75,10 +82,10 @@ ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
   var runPluginRound = function () {
     self.log("handleEmit#runPluginRound");
     self.runPluginRound(compilation).then(function (result) {
-      self.log("handleEmit#runPluginRound - done:", result.toString());
+      self.log("chrome-dev-webpack-plugin - done:\n", result);
       callback();
     }).catch(function (err) {
-      self.error("handleEmit#runPluginRound - error:", err);
+      self.error("chrome-dev-webpack-plugin - error:", err);
       callback(err);
     });
   };
@@ -94,6 +101,27 @@ ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
 };
 
 /**
+ * Runs the default plugin operations.
+ *
+ * @param {webpack.Compilation} compilation
+ * @returns Promise<object>
+ */
+ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
+  var self = this;
+  return self.updateManifestJson().then(function (manifestJson) {
+    self.manifestJson = manifestJson || self.manifestJson;
+    var missingFields = manifestMandatory.filter(function (key) {
+      return (!self.manifestJson.hasOwnProperty(key));
+    });
+    if (0 < missingFields.length) {
+      self.warn("The resulting manifestJson is missing " +(1<missingFields.lenght?"fields":" a field")+ ": \"" + missingFields.join("\", \"") + "\".");
+    }
+    self.emitManifestJson(compilation);
+    return self.manifestJson;
+  });
+};
+
+/**
  * Initializes the plugin (finds missing data).
  *
  * @param {webpack.Compilation} compilation
@@ -104,35 +132,86 @@ ChromeDevWebpackPlugin.prototype.initialize = function(compilation) {
   self.log("initialize");
   return new Promise(function (resolve, reject) {
 
-    self.log("self.manifestOutput", self.manifestOutput);
-    self.log("self.manifestSourceFunction", self.manifestSourceFunction);
-
+    //If the manifest output is not set try to find the manifest in the emitted resources.
     if(!self.manifestOutput) {
+      self.log("Looking for a valid manifest.json in the compilation assets.");
       self.manifestOutput = findManifestInAssets(compilation.assets);
       self.log(" - look for manifestOutput:", self.manifestOutput);
     }
 
-    //Initialize the manifestSourceFunction
+    //If the function to retrieve the manifest data doesn't exist.
     if ("function" !== typeof self.manifestSourceFunction)
     {
       if(self.manifestInput) {
+        self.log("Will read manifest.json from the given input path: " + self.manifestInput);
+        //if the path to a source manifest file has been passed
+        //read this file.
         self.manifestSourceFunction = function () {
+          //TODO: replace this with an async mechanism.
           return fs.readFileSync(self.manifestInput);
         };
       } else if (self.manifestOutput
         && "undefined" !== typeof compilation.assets[self.manifestOutput]
         && "function" === compilation.assets[self.manifestOutput].source) {
+        self.log("Will use the manifest.json from the compilation assets as the source.");
+        //We have an output file which already provides the function.
         self.manifestSourceFunction = compilation.assets[self.manifestOutput].source;
+      } else if(self.context) {
+        var pathToManifest = path.join(self.context, "manifest.json");
+        if (fs.existsSync(pathToManifest)) {
+          self.log("Will use the manifest.json found in the context path.");
+          //If a manifest file
+          self.manifestSourceFunction = function () {
+            //TODO: replace this with an async mechanism.
+            return fs.readFileSync(pathToManifest);
+          };
+        }
       }
+    }
+
+    if ("function" !== typeof self.manifestSourceFunction) {
+      self.warn("Failed to resolve access to 'manifest.json'. Please set the 'source' in the plugin options");
+    }
+    else if (!self.manifestOutput) {
+      self.manifestOutput = "manifest.json";
     }
 
     resolve();
   });
 };
 
+var semver = require("semver");
+
 ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
   var self = this;
   self.log("updateManifestJson");
+
+  if (self.manifestOutput) {
+
+  }
+
+  var getPackageVersion = function (version) {
+    //We drop the prerelease tag.
+    var parts = [
+      semver.major(version),
+      semver.minor(version),
+      semver.patch(version),
+    ];
+    return {
+      version: semver.clean( parts[0] + "." + (parts[1] || 0) + "." + (parts[2] || 0) ),
+    };
+  };
+
+  var getManifestVersion = function (version) {
+    version = version || "0.0.0";
+    var parts = version.split(".");
+    return {
+      version: semver.clean( parts[0] + "." + (parts[1] || 0) + "." + (parts[2] || 0) ),
+    };
+  };
+
+  console.log("Package: ", getPackageVersion("v1.2.3-dev2"));
+  console.log("Manifest: ", getManifestVersion("1.2.3"));
 
   var readManifest = function () {
     self.log("readManifest");
@@ -203,7 +282,7 @@ ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
 ChromeDevWebpackPlugin.prototype.emitManifestJson = function(compilation) {
   var self = this;
   var manifestJsonData = JSON.stringify(self.manifestJson, null, "  ");
-  return compilation.assets[self.manifestOutput] = {
+  compilation.assets[self.manifestOutput] = {
     source: function() {
       return manifestJsonData;
     },
@@ -211,21 +290,6 @@ ChromeDevWebpackPlugin.prototype.emitManifestJson = function(compilation) {
       return manifestJsonData.length;
     }
   };
-};
-
-
-/**
- * Runs the default plugin operations.
- *
- * @param {webpack.Compilation} compilation
- * @returns Promise<object>
- */
-ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
-  var self = this;
-  return self.updateManifestJson().then(function (manifestJson) {
-    self.manifestJson = manifestJson || self.manifestJson;
-    return self.emitManifestJson(compilation);
-  });
 };
 
 

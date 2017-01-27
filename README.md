@@ -46,4 +46,6 @@ Add the plugin to your webpack configuration file.
  - `entry`: the path to the source manifest file
  - `output`: the path to the resulting manifest file (defaults to `"manifest.json"`)
  - `package`: the path to the source package.json file (defaults to `"./package.json"`)
- - `log`: the logging function you would like use.
+ - `log`: the logging function you would like use
+ - `warn`: the logging function you would like use for warnings
+ - `error`: the logging function you would like use for errors
