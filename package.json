@@ -17,6 +17,9 @@
     "url": "https://gitlab.com/slawo_c/chrome-dev-webpack-plugin/issues"
   },
   "homepage": "https://gitlab.com/slawo_c/chrome-dev-webpack-plugin#README",
+  "files": [
+    "index.js"
+  ],
   "devDependencies": {
   },
   "peerDependencies": {
