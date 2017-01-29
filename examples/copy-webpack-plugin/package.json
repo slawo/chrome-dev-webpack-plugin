@@ -1,0 +1,13 @@
+{
+  "name": "webpack-chrome-dev-plugin-example-copy-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Tests the results with the manifest.json being handled by copy-webpack-plugin",
+  "author": "Slawomir CALUCH",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^1.14.0"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^4.0.1"
+  }
+}
