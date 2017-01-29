@@ -2,6 +2,12 @@
 
 Adds chrome related development features to webpack. Helps with generating and synchronizing the manifest.json.
 
+[![License][npm-license-image]][npmjs-url]
+[![Latest version on npm][npm-version-image]][npmjs-url]
+[![Build Status][travis-image]][travis-url]
+[![Dependency Status][dependency-image]][dependency-url]
+[![Known Vulnerabilities][snyk-image]][snyk-url]
+
 ## Why?
 For every chrome extension (standalone or paired with a web application) the same tasks are required and the same issues with version synchronization arise.
 To standardize the development process with webpack generated chrome extensions this plugin was created.
@@ -90,3 +96,19 @@ Copyright (c) 2017, Slawomir CALUCH
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
 THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+[travis-image]: https://travis-ci.org/slawo/chrome-dev-webpack-plugin.svg?branch=master
+[travis-url]: https://travis-ci.org/slawo/chrome-dev-webpack-plugin
+
+[dependency-image]: https://img.shields.io/gemnasium/slawo/chrome-dev-webpack-plugin.svg
+[dependency-url]: https://gemnasium.com/slawo/chrome-dev-webpack-plugin
+
+[snyk-image]: https://snyk.io/test/github/slawo/chrome-dev-webpack-plugin/master/badge.svg
+[snyk-url]: https://snyk.io/test/github/slawo/chrome-dev-webpack-plugin
+
+[nodei-image]: https://nodei.co/npm/chrome-dev-webpack-plugin.png
+[npmjs-url]: https://www.npmjs.com/package/chrome-dev-webpack-plugin
+
+[npm-license-image]: https://img.shields.io/npm/l/chrome-dev-webpack-plugin.svg
+[npm-version-image]: https://img.shields.io/npm/v/chrome-dev-webpack-plugin.svg
