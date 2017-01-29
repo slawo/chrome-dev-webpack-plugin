@@ -60,6 +60,7 @@ ChromeDevWebpackPlugin.prototype.apply = function(compiler) {
   this.manifestSourceFunction = null;
   this.manifestJson = null;
   this.initialized = false;
+  this.chunkVersions = {};
 
   this.context = compiler.options.context || path.resolve("./");
 
@@ -77,14 +78,27 @@ ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
   var self = this;
 
   var runPluginRound = function () {
-    self.runPluginRound(compilation).then(function (result) {
-      self.log("chrome-dev-webpack-plugin - done:\n", result);
+    var changedChunks = compilation.chunks.filter(function(chunk) {
+      var oldVersion = this.chunkVersions[chunk.name];
+      this.chunkVersions[chunk.name] = chunk.hash;
+      return chunk.hash !== oldVersion;
+    }.bind(this));
+
+    if (0 < changedChunks.length) {
+      this.runPluginRound(compilation).then(function (result) {
+        this.log("chrome-dev-webpack-plugin - done:\n", result);
+        callback();
+      }).catch(function (err) {
+        this.error("chrome-dev-webpack-plugin - error:", err);
+        callback(err);
+      });
+    } else {
+      this.log("chrome-dev-webpack-plugin - run not required.");
+      //If nothing changed, ignore this run.
       callback();
-    }).catch(function (err) {
-      self.error("chrome-dev-webpack-plugin - error:", err);
-      callback(err);
-    });
-  };
+    }
+
+  }.bind(this);
 
   if (!self.initialized) {
     self.initialize(compilation).then(function () {
