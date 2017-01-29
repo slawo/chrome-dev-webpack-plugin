@@ -47,6 +47,8 @@ Ex:
       }
     }
 
+Additionally if `script.js` generates another file (ex: `script.bundle.js`). This entry will automatically be renamed to the right filename.
+
 ## options
 
  - `entry`: the path to the source manifest file (tries to find one if none provided)
