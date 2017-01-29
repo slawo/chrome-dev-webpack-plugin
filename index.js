@@ -74,11 +74,9 @@ ChromeDevWebpackPlugin.prototype.apply = function(compiler) {
  * @param {function} callback
  */
 ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
-  this.log("handleEmit");
   var self = this;
 
   var runPluginRound = function () {
-    self.log("handleEmit#runPluginRound");
     self.runPluginRound(compilation).then(function (result) {
       self.log("chrome-dev-webpack-plugin - done:\n", result);
       callback();
