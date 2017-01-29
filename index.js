@@ -63,8 +63,6 @@ ChromeDevWebpackPlugin.prototype.apply = function(compiler) {
 
   this.context = compiler.options.context || path.resolve("./");
 
-  console.log("this.context:", this.context);
-
   //Adds handlers
   compiler.plugin("emit", this.handleEmit.bind(this));
 };
@@ -229,7 +227,6 @@ ChromeDevWebpackPlugin.prototype.mapfilesToBundles = function(compilation, files
   var self = this;
   var filesBundlesMap = {};
   files = (files || []).map (function (file) { return { file:file, fullPath: path.join(self.context, file)}; });
-  console.log("files", files);
 
   var getParents = function (_module) {
     var parents = [];
@@ -302,9 +299,6 @@ ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
       version: semver.clean( parts[0] + "." + (parts[1] || 0) + "." + (parts[2] || 0) ),
     };
   };
-
-  console.log("Package: ", getPackageVersion("v1.2.3-dev2"));
-  console.log("Manifest: ", getManifestVersion("1.2.3"));
 
   var readManifest = function () {
     self.log("readManifest");
