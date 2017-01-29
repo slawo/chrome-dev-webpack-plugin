@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js ./",
+    "test-travis": "npm run test",
     "test": "./node_modules/mocha/bin/mocha test"
   },
   "repository": {
