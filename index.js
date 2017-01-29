@@ -28,9 +28,9 @@ const manifestMandatory = ["name", "version", "manifest_version"];
 var ChromeDevWebpackPlugin = module.exports = function ChromeDevWebpackPlugin(options) {
   options = options || {};
   /*eslint-disable no-console */
+  this.warn = options.warn || options.log || console.warn;
+  this.error = options.error || options.log || console.error;
   this.log = options.log || function() {};
-  this.warn = options.warn || console.warn;
-  this.error = options.error || console.error;
   /*eslint-enable no-console */
 
   //This is used to retrieve the current version. =>
