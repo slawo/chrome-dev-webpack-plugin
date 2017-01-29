@@ -88,10 +88,10 @@ ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
       this.runPluginRound(compilation).then(function (result) {
         this.log("chrome-dev-webpack-plugin - done:\n", result);
         callback();
-      }).catch(function (err) {
+      }.bind(this)).catch(function (err) {
         this.error("chrome-dev-webpack-plugin - error:", err);
         callback(err);
-      });
+      }.bind(this));
     } else {
       this.log("chrome-dev-webpack-plugin - run not required.");
       //If nothing changed, ignore this run.
