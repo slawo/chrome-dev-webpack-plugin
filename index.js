@@ -114,7 +114,50 @@ ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
       return (!self.manifestJson.hasOwnProperty(key));
     });
     if (0 < missingFields.length) {
-      self.warn("The resulting manifestJson is missing " +(1<missingFields.lenght?"fields":" a field")+ ": \"" + missingFields.join("\", \"") + "\".");
+      self.warn("The resulting manifestJson is missing " +(1<missingFields.length?"fields":" a field")+ ": \"" + missingFields.join("\", \"") + "\".");
+    }
+
+    var requireMap = [];
+
+    if (self.manifestJson.background.scripts && 0 < self.manifestJson.background.scripts.length) {
+      requireMap = requireMap.concat(self.manifestJson.background.scripts);
+    }
+    if (self.manifestJson.content_scripts && 0 < self.manifestJson.content_scripts.length) {
+      requireMap = self.manifestJson.content_scripts.reduce(function(currentMap, content_script) {
+        return (content_script.js && content_script.js.length) ? currentMap.concat(content_script.js) : currentMap;
+      }, requireMap);
+    }
+
+    if(requireMap && requireMap.length) {
+      var mappedValues = self.mapfilesToBundles(compilation, requireMap);
+
+      if (self.manifestJson.background.scripts && 0 < self.manifestJson.background.scripts.length) {
+        var files = [];
+        self.manifestJson.background.scripts.forEach(function (file) {
+          if ("undefined" !== mappedValues[file]) {
+            files = files.concat(mappedValues[file]);
+          } else {
+            files.push(file);
+          }
+        });
+        self.manifestJson.background.scripts = files;
+      }
+
+      if (self.manifestJson.content_scripts && 0 < self.manifestJson.content_scripts.length) {
+        self.manifestJson.content_scripts.forEach(function(content_script) {
+          if ("undefined" !== typeof content_script.js && 0 < content_script.js.length) {
+            var files = [];
+            content_script.js.forEach(function (file) {
+              if ("undefined" !== mappedValues[file]) {
+                files = files.concat(mappedValues[file]);
+              } else {
+                files.push(file);
+              }
+            });
+            content_script.js = files;
+          }
+        });
+      }
     }
     self.emitManifestJson(compilation);
     return self.manifestJson;
@@ -181,6 +224,56 @@ ChromeDevWebpackPlugin.prototype.initialize = function(compilation) {
 };
 
 var semver = require("semver");
+
+ChromeDevWebpackPlugin.prototype.mapfilesToBundles = function(compilation, files) {
+  var self = this;
+  var filesBundlesMap = {};
+  files = (files || []).map (function (file) { return { file:file, fullPath: path.join(self.context, file)}; });
+  console.log("files", files);
+
+  var getParents = function (_module) {
+    var parents = [];
+    if (_module.parents && 0 < _module.parents.length) {
+      for (var i = 0, len = _module.parents.length; i < len; ++i) {
+        var parent = _module.parents[i];
+        if (parent.files && 0 < parent.files.length) {
+          for (var f = 0, flen = parent.files.length; f < flen; ++f) {
+            var file = parent.files[f];
+            if(!parents.includes(file)) {
+              parents.push(file);
+            }
+          }
+        }
+      }
+    }
+    return parents;
+  };
+  // Explore each chunk (build output):
+  compilation.chunks.forEach(function(chunk) {
+    var parents = getParents(chunk);
+    if (!chunk.files || 0 === chunk.files.length) {
+      return;
+    }
+    chunk.modules.forEach(function(module) {
+      if(module.fileDependencies) {
+        // Explore each source file path that was included into the module:
+        module.fileDependencies.forEach(function(filepath) {
+          if (filepath) {
+            //this.outputs[]
+            for (var i = 0, len = files.length; i < len; ++i) {
+              var file = files[i];
+              if (file.fullPath === filepath || file.file === filepath) {
+                filesBundlesMap[file.file] = parents.concat(chunk.files);
+              }
+            }
+          }
+        });
+      }
+    });
+  });
+
+  return filesBundlesMap;
+};
 
 ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
   var self = this;
