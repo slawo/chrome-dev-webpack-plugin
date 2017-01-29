@@ -76,11 +76,12 @@ The plugin has the following functions to help with chrome extensions developmen
 - [x] if no manifest is given uses the manifest.json emitted by another plugin.
 - [x] if no manifest is given uses the one in the context folder if available.
 - [x] if no package.json is given uses the package.json found in cwd.
-- [] update all the references to js files in manifest.json to references to the resulting compiled bundle files.
-- [] automatically add files listed in manifest.json to the build pipeline
-- [] adds a build number to the version field (ex: 1.2.3.9878)
-- [] generates a build number from a file
-- [] auto completes the list of files upon bundles splitting.
+- [x] update all the references to js files in manifest.json to references to the resulting compiled bundle files.
+- [x] files split with the `webpack.optimize.CommonsChunkPlugin` will have their dependencies prepended.
+- [ ] automatically add files listed in manifest.json to the build pipeline
+- [ ] adds a build number to the version field (ex: 1.2.3.9878)
+- [ ] generates a build number from a file
+- [ ] auto completes the list of files upon bundles splitting.
 
 ## License
 
