@@ -119,9 +119,9 @@ ChromeDevWebpackPlugin.prototype.handleEmit = function(compilation, callback) {
 ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
   var self = this;
   return self.updateManifestJson().then(function (manifestJson) {
-    self.manifestJson = manifestJson || self.manifestJson;
+    self.manifestJson = manifestJson = manifestJson || self.manifestJson;
     var missingFields = manifestMandatory.filter(function (key) {
-      return (!self.manifestJson.hasOwnProperty(key));
+      return (!manifestJson.hasOwnProperty(key));
     });
     if (0 < missingFields.length) {
       self.warn("The resulting manifestJson is missing " +(1<missingFields.length?"fields":" a field")+ ": \"" + missingFields.join("\", \"") + "\".");
@@ -129,11 +129,11 @@ ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
 
     var requireMap = [];
 
-    if (self.manifestJson.background.scripts && 0 < self.manifestJson.background.scripts.length) {
-      requireMap = requireMap.concat(self.manifestJson.background.scripts);
+    if (manifestJson.background.scripts && 0 < manifestJson.background.scripts.length) {
+      requireMap = requireMap.concat(manifestJson.background.scripts);
     }
-    if (self.manifestJson.content_scripts && 0 < self.manifestJson.content_scripts.length) {
-      requireMap = self.manifestJson.content_scripts.reduce(function(currentMap, content_script) {
+    if (manifestJson.content_scripts && 0 < manifestJson.content_scripts.length) {
+      requireMap = manifestJson.content_scripts.reduce(function(currentMap, content_script) {
         return (content_script.js && content_script.js.length) ? currentMap.concat(content_script.js) : currentMap;
       }, requireMap);
     }
@@ -141,20 +141,20 @@ ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
     if(requireMap && requireMap.length) {
       var mappedValues = self.mapfilesToBundles(compilation, requireMap);
 
-      if (self.manifestJson.background.scripts && 0 < self.manifestJson.background.scripts.length) {
+      if (manifestJson.background.scripts && 0 < manifestJson.background.scripts.length) {
         var files = [];
-        self.manifestJson.background.scripts.forEach(function (file) {
+        manifestJson.background.scripts.forEach(function (file) {
           if ("undefined" !== mappedValues[file]) {
             files = files.concat(mappedValues[file]);
           } else {
             files.push(file);
           }
         });
-        self.manifestJson.background.scripts = files;
+        manifestJson.background.scripts = files;
       }
 
-      if (self.manifestJson.content_scripts && 0 < self.manifestJson.content_scripts.length) {
-        self.manifestJson.content_scripts.forEach(function(content_script) {
+      if (manifestJson.content_scripts && 0 < manifestJson.content_scripts.length) {
+        manifestJson.content_scripts.forEach(function(content_script) {
           if ("undefined" !== typeof content_script.js && 0 < content_script.js.length) {
             var files = [];
             content_script.js.forEach(function (file) {
@@ -169,8 +169,9 @@ ChromeDevWebpackPlugin.prototype.runPluginRound = function(compilation) {
         });
       }
     }
-    self.emitManifestJson(compilation);
-    return self.manifestJson;
+
+    self.emitManifestJson(compilation, manifestJson);
+    return manifestJson;
   });
 };
 
@@ -263,10 +264,10 @@ ChromeDevWebpackPlugin.prototype.mapfilesToBundles = function(compilation, files
     if (!chunk.files || 0 === chunk.files.length) {
       return;
     }
-    chunk.modules.forEach(function(module) {
-      if(module.fileDependencies) {
+    chunk.modules.forEach(function(_module) {
+      if(_module.fileDependencies) {
         // Explore each source file path that was included into the module:
-        module.fileDependencies.forEach(function(filepath) {
+        _module.fileDependencies.forEach(function(filepath) {
           if (filepath) {
             //this.outputs[]
             for (var i = 0, len = files.length; i < len; ++i) {
@@ -378,9 +379,9 @@ ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
   .then(syncManifest);
 };
 
-ChromeDevWebpackPlugin.prototype.emitManifestJson = function(compilation) {
+ChromeDevWebpackPlugin.prototype.emitManifestJson = function(compilation, manifestJson) {
   var self = this;
-  var manifestJsonData = JSON.stringify(self.manifestJson, null, "  ");
+  var manifestJsonData = JSON.stringify(manifestJson, null, "  ");
   compilation.assets[self.manifestOutput] = {
     source: function() {
       return manifestJsonData;
