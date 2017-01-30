@@ -3,7 +3,7 @@ var crypto = require("crypto");
 var path = require("path");
 var fs = require("fs");
 var os = require("os");
-var ChromeDevVersionStamp = require("../src/version-stamp");
+var ChromeDevVersionStamp = require("../lib/version-stamp");
 
 var getVersion = [
   ["1.2.3", "1.2.3"],

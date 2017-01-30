@@ -19,8 +19,13 @@
   },
   "homepage": "https://github.com/slawo/chrome-dev-webpack-plugin#README",
   "files": [
-    "index.js"
+    "index.js",
+    "lib",
+    "test"
   ],
+  "directories": {
+    "lib":"lib"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",

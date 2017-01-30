@@ -5,7 +5,7 @@
 "use strict";
 var fs = require("fs");
 var path = require("path");
-var BuildId = require("./src/version-stamp");
+var BuildId = require("./lib/version-stamp");
 
 /**
  * The list of fields that are mandatory in a manifest.json.

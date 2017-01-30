@@ -1,5 +1,5 @@
 var expect = require("chai").expect;
-var tools = require("../src/tools");
+var tools = require("../lib/tools");
 
 var parseBuildNumber = [
   ["12", 12],
