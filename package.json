@@ -29,15 +29,15 @@
   "engines": {
     "node": ">=4.0"
   },
+  "dependencies": {},
+  "peerDependencies": {
+    "webpack": "1 || ^2 || ^2.1.0-beta || ^2.2.0-rc"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^3.14.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.2.0",
     "webpack": "^1.14.0"
-  },
-  "peerDependencies": {
-    "webpack": "1 || ^2 || ^2.1.0-beta || ^2.2.0-rc"
-  },
-  "dependencies": {}
+  }
 }
