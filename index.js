@@ -5,7 +5,7 @@
 "use strict";
 var fs = require("fs");
 var path = require("path");
-var BuildId = require("./lib/version-stamp");
+var ChromeDevVersionStamp = require("./lib/version-stamp");
 
 /**
  * The list of fields that are mandatory in a manifest.json.
@@ -54,7 +54,7 @@ var ChromeDevWebpackPlugin = module.exports = function ChromeDevWebpackPlugin(op
     this.syncFields = options.fields;
   }
 
-  this.versionStamp = new BuildId(options);
+  this.versionStamp = new ChromeDevVersionStamp(options);
 
   this.tabulations = "  ";
 };
@@ -195,7 +195,6 @@ ChromeDevWebpackPlugin.prototype.initialize = function(compilation) {
   var self = this;
   self.log("initialize");
   return new Promise(function (resolve, reject) {
-
     //If the manifest output is not set try to find the manifest in the emitted resources.
     if(!self.manifestOutput) {
       self.log("Looking for a valid manifest.json in the compilation assets.");
@@ -243,8 +242,6 @@ ChromeDevWebpackPlugin.prototype.initialize = function(compilation) {
     resolve();
   });
 };
-
-var semver = require("semver");
 
 ChromeDevWebpackPlugin.prototype.mapfilesToBundles = function(compilation, files) {
   var self = this;
@@ -298,30 +295,6 @@ ChromeDevWebpackPlugin.prototype.mapfilesToBundles = function(compilation, files
 ChromeDevWebpackPlugin.prototype.updateManifestJson = function() {
   var self = this;
   self.log("updateManifestJson");
-
-  if (self.manifestOutput) {
-
-  }
-
-  var getPackageVersion = function (version) {
-    //We drop the prerelease tag.
-    var parts = [
-      semver.major(version),
-      semver.minor(version),
-      semver.patch(version),
-    ];
-    return {
-      version: semver.clean( parts[0] + "." + (parts[1] || 0) + "." + (parts[2] || 0) ),
-    };
-  };
-
-  var getManifestVersion = function (version) {
-    version = version || "0.0.0";
-    var parts = version.split(".");
-    return {
-      version: semver.clean( parts[0] + "." + (parts[1] || 0) + "." + (parts[2] || 0) ),
-    };
-  };
 
   var readManifest = function () {
     self.log("readManifest");
