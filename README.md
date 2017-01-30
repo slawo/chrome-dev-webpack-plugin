@@ -28,9 +28,17 @@ Add the plugin to your webpack configuration file.
       },
       plugins: [
         new ChromeDevPlugin({
+          //The source manifest file you want to use for your extension
           entry:sourceManifest,
+          //The resulting file where to output the manifest (defaults to "manifest.json")
           output:manifestFile,
+          //The pacjage.json file you want to use to sync data from
           package:"./package.json",
+
+          //Sets the logging functions
+          log:console.log,
+          warm:console.warn,
+          error:console.error,
         }),
       ]
     }
