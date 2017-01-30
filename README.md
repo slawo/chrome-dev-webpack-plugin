@@ -31,6 +31,39 @@ Add the plugin to your webpack configuration file.
           entry:sourceManifest,
           output:manifestFile,
           package:"./package.json",
+
+          log:console.log,
+          warm:console.warn,
+          error:console.error,
+
+          //Will set the version to 1.2.3 no matter what the manifest.json and the package.json contains
+          version: "1.2.3",
+
+          //sets the build number to 10 and disables file and autoIncrement.
+          buildId: 10,
+
+          //Enables tagging the version with the build number.
+          buildId {
+            //Sets the file used to read and save the build number
+            file:".build",
+            //Sets wherever the build number should be increased (true by default)
+            autoIncrement:true,
+          }
+
+          //Will save the build number to "./.build" and auto-increment by default
+          buildId:true,
+          buildId:".build",
+          buildId: {
+            file:".build",
+            autoIncrement:true,
+          }
+          
+          //Will set the build to the given value and will not save it, nor will it auto-increment.
+          buildId:35,
+          buildId:"35",
+
+          //Will not stamp with the build ID (default behavior).
+          buildId:false,
         }),
       ]
     }
@@ -61,6 +94,24 @@ Additionally if `script.js` generates another file (ex: `script.bundle.js`). Thi
  - `warn`: the logging function you would like use for warnings
  - `error`: the logging function you would like use for errors
 
+### override version
+You can completely override the version by specifying a string:
+
+ - `version`: the version number you want to set in your manifest.json (overrides the version found in json files)
+
+### build number
+You can chose to stamp the version in your manifest.json with a build number.
+
+To simplify development and deployment the build id can be automatically generated upon emitting files. First the build Id is read from a file, increased applied and saved. simply set `buildId` to true, of give it a file you want to use for the process.
+
+If you pass a build number instead, the build number will be used as is.
+- `buildId`: activates the stamping of the version with a build ID. 
+ex:
+
+    config = {
+      buildId = process.env.TRAVIS_BUILD_NUMBER || "./.BUILD"
+    }
+
 
 ## default manifest.json
 If you don't set `entry` the plugin will try to find a manifest.json file:
@@ -78,9 +129,10 @@ The plugin has the following functions to help with chrome extensions developmen
 - [x] if no package.json is given uses the package.json found in cwd.
 - [x] update all the references to js files in manifest.json to references to the resulting compiled bundle files.
 - [x] files split with the `webpack.optimize.CommonsChunkPlugin` will have their dependencies prepended.
+- [x] adds a build number to the version field (ex: 1.2.3.9878)
+- [x] generates a build number from a file or from a given parameter
+- [x] auto increments the build id and saves it to file by default
 - [ ] automatically add files listed in manifest.json to the build pipeline
-- [ ] adds a build number to the version field (ex: 1.2.3.9878)
-- [ ] generates a build number from a file
 - [ ] auto completes the list of files upon bundles splitting.
 
 ## License

@@ -5,6 +5,7 @@
 "use strict";
 var fs = require("fs");
 var path = require("path");
+var BuildId = require("./src/version-stamp");
 
 /**
  * The list of fields that are mandatory in a manifest.json.
@@ -40,12 +41,21 @@ var ChromeDevWebpackPlugin = module.exports = function ChromeDevWebpackPlugin(op
   //Where to output the manifest file <=
   this.manifestOutput = options.output;
 
+  this.syncFields = [];
+  if(options.hasOwnProperty("version") && false === options.version) {
+    //Do nothing about it
+  } else {
+    this.syncFields.push("version");
+  }
+
   //The list of fields to copy from package.json to manifest.json
-  this.syncFields = ["version"];
 
   if ("undefined" !== options.fields && Array.isArray(options.fields)) {
     this.syncFields = options.fields;
   }
+
+  this.versionStamp = new BuildId(options);
+
   this.tabulations = "  ";
 };
 
