@@ -1,5 +1,5 @@
 var fs = require("fs");
-var semver = require("semver");
+var tools = require("./tools");
 
 var BUILD_KEY = "buildId";
 var DEFAULT_BUILD_FILE = ".build";
@@ -33,7 +33,7 @@ var ChromeDevVersionStamp = module.exports = function ChromeDevVersionStamp(opti
     }
     //gather the build options:
     var o = options[BUILD_KEY];
-    var buildId = parseBuildNumber(o);
+    var buildId = tools.parseBuildNumber(o);
     var buildOptions = {};
 
     if (true === o) {
@@ -46,7 +46,7 @@ var ChromeDevVersionStamp = module.exports = function ChromeDevVersionStamp(opti
       buildOptions.autoIncrement = false;
     } else if ("string" === typeof o) {
       //select file
-      buildOptions.file = DEFAULT_BUILD_FILE;
+      buildOptions.file = o;
     } else {
       if (o.hasOwnProperty("file")) {
         buildOptions.file = o.file;
@@ -72,7 +72,7 @@ var ChromeDevVersionStamp = module.exports = function ChromeDevVersionStamp(opti
           return cached;
         }
         try {
-          cached = (parseBuildNumber(fs.readFileSync(this.buildFile).toString()) || 0);
+          cached = (tools.parseBuildNumber(fs.readFileSync(this.buildFile).toString()) || 0);
           this.log("read build number from:",this.buildFile, cached);
           return cached;
         } catch (e) {
@@ -95,14 +95,14 @@ var ChromeDevVersionStamp = module.exports = function ChromeDevVersionStamp(opti
           }
         }
       }.bind(this);
-    } else if ("number" === this.build) {
+    } else if ("number" === typeof this.build) {
       this.build = buildId;
-      this.getBuildNumber = function () {
-        return this.buildId;
+      this.readBuildNumber = function () {
+        return this.build;
       }.bind(this);
 
       this.writeBuildNumber = function (buildNumber) {
-        this.buildId = buildNumber;
+        this.build = buildNumber;
       }.bind(this);
     }
   }
@@ -120,30 +120,24 @@ ChromeDevVersionStamp.prototype.getBuildNumber = function () {
 };
 
 ChromeDevVersionStamp.prototype.stampVersion = function (version) {
+  var useVersion = tools.parseManifestVersion(this.semver ? this.semver : version);
   var parts = [];
 
-  //retrieves the clean version.
-  if (this.semver) {
-    parts = [
-      semver.major(this.semver),
-      semver.minor(this.semver) || 0,
-      semver.patch(this.semver) || 0,
-    ];
-  } else {
-    parts = [
-      semver.major(version),
-      semver.minor(version) || 0,
-      semver.patch(version) || 0,
-    ];
+  if (useVersion) {
+    parts = useVersion.split(".");
   }
-  var buildId = this.getBuildNumber();
-  if ("number" === typeof buildId) {
-    this.build = buildId;
-    this.log("stampVersion", buildId);
-    parts.push(buildId);
+  if(this.readBuildNumber) {
+    var buildId = this.getBuildNumber();
+    if ("number" === typeof buildId) {
+      this.build = buildId;
+      this.log("stampVersion", buildId);
+      while (parts.length < 4) {
+        parts.push(0);
+      }
+      parts[3] = buildId;
+      this.save();
+    }
   }
-
-  //sets the version (ex: 1.2.3-rc1) to a format appropriate for chrome.
   return parts.join(".");
 };
 
@@ -151,18 +145,4 @@ ChromeDevVersionStamp.prototype.save = function () {
   if (this.writeBuildNumber && ("function" === typeof this.writeBuildNumber)) {
     this.writeBuildNumber(this.build);
   }
-};
-
-var parseBuildNumber = function (buildNumber) {
-  if ("number" === typeof buildNumber) {
-    return buildNumber;
-  }
-  if ("string" === typeof buildNumber) {
-    var res = parseInt(buildNumber);
-    if (buildNumber !== ""+res) {
-      return;
-    }
-    return res;
-  }
-  return;
 };
