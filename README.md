@@ -9,8 +9,8 @@ Adds chrome related development features to webpack. Helps with generating and s
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 
 ## Why?
-For every chrome extension (standalone or paired with a web application) the same tasks are required and the same issues with version synchronization arise.
-To standardize the development process with webpack generated chrome extensions this plugin was created.
+For almost every new chrome extension the same tasks are required and the same issue with version synchronization and build numbers must be solved.
+This plugin was created to streamline the development process of chrome extensions.
 
 ## How to
 Add the plugin to your webpack configuration file.
@@ -23,6 +23,47 @@ Add the plugin to your webpack configuration file.
     var sourcePath = path.join(__dirname, "src");
     var distPath = path.join(__dirname, "dist");
     var sourceManifest = path.join(sourcePath, manifestFile); // ./src/manifest.json
+
+
+    var plugins = [
+      new ChromeDevPlugin({
+        //The source manifest file you want to use for your extension (defaults to {$context}/"manifest.json")
+        entry:sourceManifest,
+
+        //The resulting manifest to emit (defaults to "manifest.json")
+        output:manifestFile,
+        
+        //The package.json file you want to use to sync data from
+        package:"./package.json",
+
+        //Sets the logging functions
+        log:console.log,
+        warm:console.warn,
+        error:console.error,
+
+        //Will set the version to 1.2.3 no matter what the manifest.json and the package.json contains
+        version: "1.2.3",
+
+        //Will not stamp the resulting manifest.json version with a build number (default behavior).
+        buildId:false,
+
+        //sets the build number to 10 and disables file and autoIncrement.
+        buildId: 10,
+        buildId: "10",
+
+        //Will use the file "./.build" to read and save the build number.
+        //Will also auto-increment the build id for every fruitful webpack run.
+        buildId:true,
+        buildId:".build",
+        buildId: {
+          file:".build",
+          autoIncrement:true,
+        }
+      }),
+    ];
+
+
+
     module.exports = {
       context: path.resolve(sourcePath),
       entry:  {
@@ -32,50 +73,7 @@ Add the plugin to your webpack configuration file.
         path: distPath,
         filename: "[name].bundle.js"
       },
-      plugins: [
-        new ChromeDevPlugin({
-          //The source manifest file you want to use for your extension
-          entry:sourceManifest,
-          //The resulting file where to output the manifest (defaults to "manifest.json")
-          output:manifestFile,
-          //The pacjage.json file you want to use to sync data from
-          package:"./package.json",
-
-          //Sets the logging functions
-          log:console.log,
-          warm:console.warn,
-          error:console.error,
-
-          //Will set the version to 1.2.3 no matter what the manifest.json and the package.json contains
-          version: "1.2.3",
-
-          //sets the build number to 10 and disables file and autoIncrement.
-          buildId: 10,
-
-          //Enables tagging the version with the build number.
-          buildId {
-            //Sets the file used to read and save the build number
-            file:".build",
-            //Sets wherever the build number should be increased (true by default)
-            autoIncrement:true,
-          }
-
-          //Will save the build number to "./.build" and auto-increment by default
-          buildId:true,
-          buildId:".build",
-          buildId: {
-            file:".build",
-            autoIncrement:true,
-          }
-          
-          //Will set the build to the given value and will not save it, nor will it auto-increment.
-          buildId:35,
-          buildId:"35",
-
-          //Will not stamp with the build ID (default behavior).
-          buildId:false,
-        }),
-      ]
+      plugins: plugins
     }
 
 ## manifest.json
