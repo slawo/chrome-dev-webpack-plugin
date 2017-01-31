@@ -92,7 +92,7 @@ describe("version-stamp ChromeDevVersionStamp", function () {
         done(err);
       });
     });
-    after("delete the temporary build file", function(done) {
+    after("delete the temporary build file", function (done) {
       fs.unlink(filename);
       done();
     });
@@ -101,6 +101,29 @@ describe("version-stamp ChromeDevVersionStamp", function () {
       var vs = new ChromeDevVersionStamp ({buildId:filename});
       for (var i = 0; i < 10; ++i) {
         var expected = input+"."+(i+2);
+        var result = vs.stampVersion(input);
+        expect(result).to.equal(expected);
+      }
+    });
+  });
+  describe("stampVersion: {buildId:{\"file\":\"filename\",\"autoIncrement\":false}}", function () {
+    var testId = 0;
+    var filename;
+    before("create a temporary build file", function (done) {
+      filename = temp.generateFileName("test-" + (++testId));
+      fs.writeFile(filename, "1", function (err) {
+        done(err);
+      });
+    });
+    after("delete the temporary build file", function (done) {
+      fs.unlink(filename);
+      done();
+    });
+    it("should have the same build id for all the runs.", function () {
+      var input = "1.2.3";
+      var vs = new ChromeDevVersionStamp ({buildId:{file:filename, autoIncrement:false}});
+      for (var i = 0; i < 10; ++i) {
+        var expected = input+".1";
         var result = vs.stampVersion(input);
         expect(result).to.equal(expected);
       }
