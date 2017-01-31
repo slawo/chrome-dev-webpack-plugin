@@ -5,7 +5,7 @@
 "use strict";
 var fs = require("fs");
 var path = require("path");
-var ChromeDevVersionStamp = require("./lib/version-stamp");
+var VersionStamp = require("./lib/version-stamp");
 var JsonLoader = require("./lib/json-loader");
 var ManifestSync = require ("./lib/manifest-sync");
 
@@ -48,7 +48,7 @@ module.exports = class ChromeDevWebpackPlugin {
     this.manifestOutput = options.output;
 
     this.manifestSync = new ManifestSync(this.manifestInput, this.pathToPackageJson);
-    this.versionStamp = new ChromeDevVersionStamp(options);
+    this.versionStamp = new VersionStamp(options);
 
     this.tabulations = "  ";
   }

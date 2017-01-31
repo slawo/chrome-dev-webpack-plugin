@@ -20,10 +20,10 @@ var parseManifestVersion = [
 
 describe("tools", function () {
   describe("parseBuildNumber", function () {
-    parseBuildNumber.forEach((tuples) => {
+    parseBuildNumber.forEach(function (tuples) {
       var input = tuples[0];
       var expected = tuples[1];
-      it("should parse " + (typeof input) + " " + input + " to " + (typeof expected) + " " + expected, function() {
+      it("should parse " + (typeof input) + " " + input + " to " + (typeof expected) + " " + expected, function () {
         var result = tools.parseBuildNumber(input);
         expect(result).to.equal(expected);
         expect(result).to.be.a(typeof expected);
@@ -31,10 +31,10 @@ describe("tools", function () {
     });
   });
   describe("parseManifestVersion", function () {
-    parseManifestVersion.forEach((tuples) => {
+    parseManifestVersion.forEach(function (tuples) {
       var input = tuples[0];
       var expected = tuples[1];
-      it("should parse " + (typeof input) + " " + input + " to " + (typeof expected) + " " + expected, function() {
+      it("should parse " + (typeof input) + " " + input + " to " + (typeof expected) + " " + expected, function () {
         var result = tools.parseManifestVersion(input);
         expect(result).to.equal(expected);
         expect(result).to.be.a(typeof expected);

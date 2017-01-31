@@ -5,19 +5,19 @@ var fs = require("fs");
 var path = require("path");
 var temp = require("./tools/temp");
 
-var ChromeDevJsonLoaderFile = require("../lib/json-loader-file");
+var JsonLoaderFile = require("../lib/json-loader-file");
 
-describe("JsonLoaderFile", function() {
+describe("JsonLoaderFile", function () {
   var mainLoader;
   var folder = temp.generateFileName();
   var fileName = path.join(folder, "package.json");
   before("setup the environment", (done) => {
     temp.generateFolder(folder).then( () => {
-      mainLoader = new ChromeDevJsonLoaderFile(fileName);
+      mainLoader = new JsonLoaderFile(fileName);
       fs.writeFile(fileName, "{\"version\":\"1.2.3\"}", done);
     },done);
   });
-  after("cleanup the environment", function(done) {
+  after("cleanup the environment", function (done) {
     fs.unlink(fileName, (err) => {
       if(err) {
         this.warn(err);
@@ -30,13 +30,13 @@ describe("JsonLoaderFile", function() {
     });
   });
   describe("load", () => {
-    it("should tell when the file has not been loaded.", function(done) {
+    it("should tell when the file has not been loaded.", function (done) {
       mainLoader.hasLatestData().then( (hasLatest) => {
         expect(hasLatest).to.be.false;
         done();
       }).catch(done);
     });
-    it("should load the data", function(done) {
+    it("should load the data", function (done) {
       mainLoader.loadJson().then ( (result) => {
         expect(result).to.be.json;
         expect(result).to.have.property("version");
@@ -44,7 +44,7 @@ describe("JsonLoaderFile", function() {
         done();
       }).catch(done);
     });
-    it("should tell when the file has not changed.", function(done) {
+    it("should tell when the file has not changed.", function (done) {
       mainLoader.hasLatestData().then( (hasLatest) => {
         expect(hasLatest).to.be.true;
         done();
@@ -52,19 +52,19 @@ describe("JsonLoaderFile", function() {
     });
   });
   describe("re-load", () => {
-    before("rewrite the file", function(done) {
+    before("rewrite the file", function (done) {
       this.timeout(1300);
       setTimeout( () => {
         fs.writeFile(fileName, "{\"version\":\"1.2.4\"}", done);
       }, 1000);
     });
-    it("should tell when the file has changed.", function(done) {
+    it("should tell when the file has changed.", function (done) {
       mainLoader.hasLatestData().then( (hasLatest) => {
         expect(hasLatest).to.be.false;
         done();
       }).catch(done);
     });
-    it("should re-load the data and provide the new content", function(done) {
+    it("should re-load the data and provide the new content", function (done) {
       mainLoader.loadJson().then ( (result) => {
         expect(result).to.be.json;
         expect(result).to.have.property("version");
@@ -72,7 +72,7 @@ describe("JsonLoaderFile", function() {
         done();
       }).catch(done);
     });
-    it("should tell when the file has not changed.", function(done) {
+    it("should tell when the file has not changed.", function (done) {
       mainLoader.hasLatestData().then( (hasLatest) => {
         expect(hasLatest).to.be.true;
         done();

@@ -8,7 +8,7 @@ chai.use(chaiAsPromised);
 var fs = require("fs");
 var path = require("path");
 var temp = require("./tools/temp");
-var ChromeDevManifestSync = require("../lib/manifest-sync");
+var ManifestSync = require("../lib/manifest-sync");
 
 var defaultManifest = "{\"name\":\"test-sync-extension\", \"manifest_version\":\"2\" }";
 var defaultPackage = "{\"version\":\"1.2.3\", \"name\":\"test-sync\" }";
@@ -45,7 +45,7 @@ class SyncManager {
 
       return mPromise.all(fileWrites);
     }).then ( () => {
-      return this.sync = new ChromeDevManifestSync(this.manifestName, this.packageName);
+      return this.sync = new ManifestSync(this.manifestName, this.packageName);
     });
   }
 }
@@ -57,7 +57,7 @@ var initSync = function (manifestContent, packageContent) {
   return m.init();
 };
 
-describe("ChromeDevManifestSync", function () {
+describe("ManifestSync", function () {
   var mainManager = new SyncManager();
   var mainSync = null;
   before("setup the environment", function (done) {

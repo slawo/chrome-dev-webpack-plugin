@@ -4,15 +4,15 @@ var path = require("path");
 var crypto = require("crypto");
 var mkdirp = require("mkdirp");
 
-var generateFileName =  function (name) {
-  var filename = "cdwp"+crypto.randomBytes(12).readUInt32LE(0)+(name ? name : "");
-  filename = path.join(os.tmpdir(), filename);
+var generateFileName =  (name) => {
+  var filename = crypto.randomBytes(12).readUInt32LE(0)+(name ? name : "");
+  filename = path.join(os.tmpdir(), "com.caluch.chrome-dev-webpack-plugin", filename);
   return filename;
 };
-var generateFolder = function (filename) {
+var generateFolder = (filename) => {
   filename = filename || generateFileName();
-  return new Promise(function (resolve, reject) {
-    mkdirp(filename, function(err) {
+  return new Promise( (resolve, reject) => {
+    mkdirp(filename, (err) => {
       if (err) {
         reject (err);
       }
