@@ -6,6 +6,10 @@
 var fs = require("fs");
 var path = require("path");
 var ChromeDevVersionStamp = require("./lib/version-stamp");
+var JsonLoader = require("./lib/json-loader");
+var ManifestSync = require ("./lib/manifest-sync");
+
+var mPromise = require("./lib/promise");
 
 /**
  * The list of fields that are mandatory in a manifest.json.
@@ -33,7 +37,7 @@ module.exports = class ChromeDevWebpackPlugin {
     /*eslint-disable no-console */
     this.warn = options.warn || options.log || console.warn;
     this.error = options.error || options.log || console.error;
-    this.log = options.log || function() {};
+    this.log = options.log || console.log;
     /*eslint-enable no-console */
 
     //This is used to retrieve the current version. =>
@@ -43,19 +47,7 @@ module.exports = class ChromeDevWebpackPlugin {
     //Where to output the manifest file <=
     this.manifestOutput = options.output;
 
-    this.syncFields = [];
-    if(options.hasOwnProperty("version") && false === options.version) {
-      //Do nothing about it
-    } else {
-      this.syncFields.push("version");
-    }
-
-    //The list of fields to copy from package.json to manifest.json
-
-    if ("undefined" !== options.fields && Array.isArray(options.fields)) {
-      this.syncFields = options.fields;
-    }
-
+    this.manifestSync = new ManifestSync(this.manifestInput, this.pathToPackageJson);
     this.versionStamp = new ChromeDevVersionStamp(options);
 
     this.tabulations = "  ";
@@ -69,8 +61,6 @@ module.exports = class ChromeDevWebpackPlugin {
   apply (compiler) {
     //Used to retrieve the latest source of the manifest file.
     this.actions = [];
-    this.manifestSourceFunction = null;
-    this.manifestJson = null;
     this.initialized = false;
     this.chunkVersions = {};
 
@@ -128,8 +118,7 @@ module.exports = class ChromeDevWebpackPlugin {
    * @returns Promise<object>
    */
   runPluginRound (compilation) {
-    return this.updateManifestJson().then( (manifestJson) => {
-      this.manifestJson = manifestJson = manifestJson || this.manifestJson;
+    return this.manifestSync.sync().then( (manifestJson) => {
       var missingFields = manifestMandatory.filter( (key) => {
         return (!manifestJson.hasOwnProperty(key));
       });
@@ -180,6 +169,13 @@ module.exports = class ChromeDevWebpackPlugin {
         }
       }
 
+      return manifestJson;
+    }).then ( (manifestJson) => {
+      if (manifestJson) {
+        manifestJson.version = this.versionStamp.stampVersion(manifestJson.version);
+      }
+      return manifestJson;
+    }).then( (manifestJson) => {
       this.emitManifestJson(compilation, manifestJson);
       return manifestJson;
     });
@@ -193,7 +189,7 @@ module.exports = class ChromeDevWebpackPlugin {
    */
   initialize (compilation) {
     this.log("initialize");
-    return new Promise( (resolve, reject) => {
+    return new mPromise( (resolve) => {
       //If the manifest output is not set try to find the manifest in the emitted resources.
       if(!this.manifestOutput) {
         this.log("Looking for a valid manifest.json in the compilation assets.");
@@ -201,42 +197,48 @@ module.exports = class ChromeDevWebpackPlugin {
         this.log(" - look for manifestOutput:", this.manifestOutput);
       }
 
+      if ("object" !== typeof this.manifestSync || !this.manifestSync) {
+        this.manifestSync = new ManifestSync();
+      }
       //If the function to retrieve the manifest data doesn't exist.
-      if ("function" !== typeof this.manifestSourceFunction)
+      if ("object" !== typeof this.manifestSync.manifest)
       {
         if(this.manifestInput) {
           this.log("Will read manifest.json from the given input path: " + this.manifestInput);
-          //if the path to a source manifest file has been passed
-          //read this file.
-          this.manifestSourceFunction = () => {
-            //TODO: replace this with an async mechanism.
-            return fs.readFileSync(this.manifestInput);
-          };
+          this.manifestSync.setManifest(this.manifestInput);
         } else if (this.manifestOutput
           && "undefined" !== typeof compilation.assets[this.manifestOutput]
           && "function" === compilation.assets[this.manifestOutput].source) {
           this.log("Will use the manifest.json from the compilation assets as the source.");
           //We have an output file which already provides the function.
-          this.manifestSourceFunction = compilation.assets[this.manifestOutput].source;
+          var fileName = this.manifestOutput;
+          var localCache = compilation.assets[fileName].source().toString();
+          this.manifestSync.setManifest(new JsonLoader(function () {
+            return new mPromise (function (resolve) {
+              resolve(localCache = compilation.assets[fileName].source().toString());
+            });
+          }, function () {
+            return new mPromise (function (resolve) {
+              resolve(localCache !== compilation.assets[fileName].source().toString());
+            });
+          }));
         } else if(this.context) {
           var pathToManifest = path.join(this.context, "manifest.json");
           if (fs.existsSync(pathToManifest)) {
             this.log("Will use the manifest.json found in the context path.");
-            //If a manifest file
-            this.manifestSourceFunction = () => {
-              //TODO: replace this with an async mechanism.
-              return fs.readFileSync(pathToManifest);
-            };
+            this.manifestSync.setManifest(pathToManifest);
           }
         }
       }
 
-      if ("function" !== typeof this.manifestSourceFunction) {
+      if ("object" !== typeof this.manifestSync.manifest) {
         this.warn("Failed to resolve access to 'manifest.json'. Please set the 'source' in the plugin options");
       }
       else if (!this.manifestOutput) {
         this.manifestOutput = "manifest.json";
       }
+
+      this.pathToPackageJson;
 
       resolve();
     });
@@ -288,75 +290,6 @@ module.exports = class ChromeDevWebpackPlugin {
     });
 
     return filesBundlesMap;
-  }
-
-  updateManifestJson () {
-    this.log("updateManifestJson");
-
-    var readManifest = () => {
-      this.log("readManifest");
-      return new Promise( (resolve, reject) => {
-        if ("function" === typeof this.manifestSourceFunction) {
-          resolve (this.manifestSourceFunction ().toString());
-        } else if ("string" === typeof this.manifestInput) {
-          fs.readFile(this.manifestInput, (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(data);
-            }
-          });
-        } else {
-          reject(new Error("No method to access to the original manifest.json"));
-        }
-      });
-    };
-
-    var readPackage = () => {
-      this.log("readPackage");
-      return new Promise( (resolve, reject) => {
-        if ("string" === typeof this.pathToPackageJson) {
-          fs.readFile(this.pathToPackageJson, (err, data) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(data);
-            }
-          });
-        }
-      });
-    };
-
-    var syncManifest = (manifestData) => {
-      this.log("syncManifest");
-      return new Promise( (resolve, reject) => {
-        var manifestJson = JSON.parse(manifestData);
-
-        var neededFields = [].concat(this.syncFields);
-        manifestMandatory.forEach( (key) => {
-          if("undefined" === typeof manifestJson[key]) {
-            neededFields.push (key);
-          }
-        });
-
-        if (0 < neededFields.length) {
-          resolve (readPackage().then( (packageData) => {
-            if (packageData) {
-              var packageJson = JSON.parse(packageData) || {};
-              neededFields.forEach( (key) => {
-                manifestJson[key] = packageJson[key];
-              });
-              return manifestJson;
-            }
-          }));
-        } else {
-          resolve(manifestJson);
-        }
-      });
-    };
-
-    return readManifest()
-    .then(syncManifest);
   }
 
   emitManifestJson (compilation, manifestJson) {
