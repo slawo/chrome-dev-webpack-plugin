@@ -140,8 +140,9 @@ The plugin has the following functions to help with chrome extensions developmen
 - [x] adds a build number to the version field (ex: 1.2.3.9878)
 - [x] generates a build number from a file or from a given parameter
 - [x] auto increments the build id and saves it to file by default
-- [ ] automatically add files listed in manifest.json to the build pipeline
-- [ ] auto completes the list of files upon bundles splitting.
+- [ ] add examples
+- [ ] test the examples
+- [ ] automatically add files listed in manifest.json to the build pipeline (if they are not already there).
 
 ## License
 
