@@ -11,9 +11,6 @@ module.exports = {
             "jsx": true
         }
     },
-    "plugins": [
-        "react"
-    ],
     "rules": {
         "eol-last": [
             "error"
