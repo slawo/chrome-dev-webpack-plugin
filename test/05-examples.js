@@ -111,10 +111,8 @@ var OUTPUT_DIR = path.join(__dirname, "../.tmp");
 const examples = [
   "default",
   "absolute-path",
-  //"absolute-path-subfolder",
   "commons-chunk-plugin",
   "copy-webpack-plugin",
-  //"relative-path",
 ];
 
 describe("examples", function () {
