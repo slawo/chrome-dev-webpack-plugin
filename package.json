@@ -1,7 +1,7 @@
 {
   "name": "chrome-dev-webpack-plugin",
   "version": "0.3.0",
-  "description": "",
+  "description": "Adds chrome related development features to webpack. Helps with generating and synchronizing the manifest.json.",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js ./",
