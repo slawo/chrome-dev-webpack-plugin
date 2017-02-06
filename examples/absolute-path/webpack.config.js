@@ -2,7 +2,6 @@
 
 var path = require("path");
 var WebpackChromeDevPlugin = require("../..");
-var CopyWebpackPlugin = require("copy-webpack-plugin");
 var webpackMajorVersion = require("webpack/package.json").version.split(".")[0];
 
 var sourcePath = path.join(__dirname, "src");
@@ -10,15 +9,17 @@ var distPath = path.join(__dirname, "dist/webpack-" + webpackMajorVersion);
 
 //The plugin we are testing!
 var plugins = [
-  new CopyWebpackPlugin([{ from: "./manifest.json" }]),
-  new WebpackChromeDevPlugin({log:console.log}),
+  new WebpackChromeDevPlugin({
+    entry:path.join(sourcePath, "manifest.json"),
+    package:path.join(__dirname, "package.json"),
+  }),
 ];
 
 module.exports = {
   context: path.resolve(sourcePath),
   entry:  {
-    background: ["./background.js"],
-    content: ["./content.js"],
+    background: [path.join(sourcePath, "background.js")],
+    content: [path.join(sourcePath, "content.js")],
   },
   output: {
     path: distPath,

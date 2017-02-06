@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "background": {
+    "scripts": [
+      "background.bundle.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.bundle.js"
+      ]
+    }
+  ],
+  "name": "webpack-chrome-dev-plugin-example-absolute-path",
+  "version": "1.0.0"
+}

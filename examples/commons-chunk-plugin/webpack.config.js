@@ -19,7 +19,7 @@ var plugins = [
     package:path.join(__dirname,"./package.json"),
   }),
   //Testing CommonsChunkPlugin
-  new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js")
+  new webpack.optimize.CommonsChunkPlugin( {name:"vendor", filename:"vendor.bundle.js"}),
 ];
 
 module.exports = {
