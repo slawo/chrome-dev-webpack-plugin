@@ -8,12 +8,51 @@ Adds chrome related development features to webpack. Helps with generating and s
 [![Dependency Status][dependency-image]][dependency-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 
-## Why?
-For almost every new chrome extension the same tasks are required and the same issue with version synchronization and build numbers must be solved.
-This plugin was created to streamline the development process of chrome extensions.
+## install
 
-## How to
-Add the plugin to your webpack configuration file.
+    npm install --save-dev chrome-dev-webpack-plugin
+
+Add the plugin to your webpack configuration file:
+
+    //webpack.config.js
+    var ChromeDevPlugin = require("chrome-dev-webpack-plugin");
+    var path = require("path");
+
+    module.exports = {
+      context: path.join(__dirname, "src"),
+      entry:  {
+        background: [path.join(__dirname, "src", "background.js")],
+      },
+      output: {
+        path: path.join(__dirname, "dist"),
+        filename: "[name].bundle.js"
+      },
+      plugins: [new ChromeDevPlugin()]
+    }
+
+## Features
+This plugin helps streamlining chrome extension development by providing features for maintaining and synchronizing manifest.json files.
+
+### manifest.json
+By default the plugin expects a `manifest.json` file to be present in the `context` path. It will generate a new manifest.json in the `output.path`.
+
+### auto completion
+The `manifest.json` file doesn't need to be complete. You can omit some of the keys (`name`, `description`, `version`) as long as they are present in the `package.json`.
+The missing keys in the `manifest.json` will be filled from the project's `package.json` file.
+
+If the `version` key is filled, the semver notation will be translated to be compliant with chrome's version notation.
+
+### build number
+Chrome's versions are composed of up to 4 fields contrarily to the semver notation.
+
+Optionally the 4th field in `version` can be filled with a build number. It can be generated or set manually.
+
+### resources mapping
+The plugin will automatically try to map resources with resulting bundles (ex: `background.js` to `background.bundle.js`).
+
+Additionally if a resulting bundle ends-up being optimized (using `webpack.optimize.CommonsChunkPlugin`) all the resulting scripts lists will have the optimized bundles prepended (ex: `['background.js']` to `['vendor.bundle.js', 'background.bundle.js']`).
+
+## Options
 
     //webpack.config.js
     var ChromeDevPlugin = require("chrome-dev-webpack-plugin");
@@ -23,7 +62,6 @@ Add the plugin to your webpack configuration file.
     var sourcePath = path.join(__dirname, "src");
     var distPath = path.join(__dirname, "dist");
     var sourceManifest = path.join(sourcePath, manifestFile); // ./src/manifest.json
-
 
     var plugins = [
       new ChromeDevPlugin({
@@ -62,8 +100,6 @@ Add the plugin to your webpack configuration file.
       }),
     ];
 
-
-
     module.exports = {
       context: path.resolve(sourcePath),
       entry:  {
@@ -75,20 +111,6 @@ Add the plugin to your webpack configuration file.
       },
       plugins: plugins
     }
-
-## manifest.json
-The manifest.json file doesn't need to be complete. You can omit some of the fields and the plugin will automatically fill them with the information found in package.json.
-Ex:
-
-    {
-      "manifest_version": 2,
-      "description": "An example without version or name",
-      "background": {
-        "scripts": ["background.js"]
-      }
-    }
-
-Additionally if `script.js` generates another file (ex: `script.bundle.js`). This entry will automatically be renamed to the right filename.
 
 ## options
 
@@ -108,41 +130,41 @@ You can completely override the version by specifying a string:
  - `version`: the version number you want to set in your manifest.json (overrides the version found in json files)
 
 ### build number
-You can chose to stamp the version in your manifest.json with a build number.
+You can choose to stamp the version in your manifest.json with a build number.
 
-To simplify development and deployment the build id can be automatically generated upon emitting files. First the build Id is read from a file, increased applied and saved. simply set `buildId` to true, of give it a file you want to use for the process.
+To simplify development and deployment the build id can be automatically generated when new files are emitted. First the build Id is read from a file, increased applied and saved. To enable this feature set `buildId` to true, or to a filename.
 
 If you pass a build number instead, the build number will be used as is.
-- `buildId`: activates the stamping of the version with a build ID. 
-ex:
+- `buildId`: activates the stamping of the version with a build number. 
+
 
     config = {
-      buildId = process.env.TRAVIS_BUILD_NUMBER || "./.BUILD"
+      buildId = process.env.TRAVIS_BUILD_NUMBER || "./.BUILDID"
     }
 
-
 ## default manifest.json
-If you don't set `entry` the plugin will try to find a manifest.json file:
+If you don't set the `entry` option the plugin will try to find a manifest.json file:
 
-- if another plugin already emits a manifest file (ex:[CopyWebpackPlugin](https://github.com/kevlened/copy-webpack-plugin)) this file will be used as an `entry`. `output` will be auto filled if it has not been set.
+- if another plugin already emits a manifest file (ex:[CopyWebpackPlugin](https://github.com/kevlened/copy-webpack-plugin)) this file will be used as an `entry`. `output` will also be automatically filled if it has not been set.
 - otherwise the plugin expects to find a manifest.json file in the `context` path of your project.
 
-## Features 
-The plugin has the following functions to help with chrome extensions development:
+## Progress
+Here is the status of the features:
 
 - [x] emit a manifest file.
-- [x] synchronizes the missing fields in the manifest file from a package.json file.
+- [x] synchronize the missing mandatory keys in the manifest file from a package.json file.
 - [x] if no manifest is given uses the manifest.json emitted by another plugin.
 - [x] if no manifest is given uses the one in the context folder if available.
 - [x] if no package.json is given uses the package.json found in cwd.
-- [x] update all the references to js files in manifest.json to references to the resulting compiled bundle files.
-- [x] files split with the `webpack.optimize.CommonsChunkPlugin` will have their dependencies prepended.
-- [x] adds a build number to the version field (ex: 1.2.3.9878)
-- [x] generates a build number from a file or from a given parameter
-- [x] auto increments the build id and saves it to file by default
+- [x] map all the js files in manifest.json to the resulting compiled bundle files.
+- [x] files split with the `webpack.optimize.CommonsChunkPlugin` have their dependencies prepended.
+- [x] can add a build number to the version key (ex: 1.2.3.9878)
+- [x] generate a build number from a file or from a given parameter
+- [x] auto increments the build number and saves it to file by default
 - [x] examples
-- [x] examples tested
+- [x] testing with examples
 - [ ] automatically add files listed in manifest.json to the build pipeline (if they are not already there).
+- [ ] automatically reset the build number if a reset is requested on `major`, `minor`, or `patch` increase.
 
 ## License
 
