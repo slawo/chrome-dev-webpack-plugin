@@ -11,7 +11,9 @@ var distPath = path.join(__dirname, "dist/webpack-" + webpackMajorVersion);
 //The plugin we are testing!
 var plugins = [
   new CopyWebpackPlugin([{ from: "./manifest.json" }]),
-  new WebpackChromeDevPlugin({log:console.log}),
+  new WebpackChromeDevPlugin({
+    //log:console.log
+  }),
 ];
 
 module.exports = {
