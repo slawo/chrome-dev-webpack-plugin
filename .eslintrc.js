@@ -1,6 +1,6 @@
 module.exports = {
     "env": {
-        "browser": true,
+        "node":true,
         "commonjs": true,
         "es6": true
     },
@@ -24,10 +24,14 @@ module.exports = {
             "error",
             2
         ],
+        "wrap-iife": ["error", "inside"],
         "linebreak-style": [
             "error",
             "unix"
         ],
+        "curly": "error",
+        "no-case-declarations": "error",
+        "valid-typeof": "error",
         "quotes": [
             "error",
             "double"
