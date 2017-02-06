@@ -119,6 +119,8 @@ describe("examples", function () {
   for (var i = 0, len = examples.length; i < len; ++i) {
     (function (name) {
       it("should run the " +name+ " example.", function (done) {
+        this.timeout(2000);
+        this.slow(1200);
         runTest(name).then(function (test) {
           expect (test).to.haveOwnProperty("result").to.be.an("object");
           expect (test).to.haveOwnProperty("fixture").to.be.an("object");
