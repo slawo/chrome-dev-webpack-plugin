@@ -2,6 +2,8 @@ node_modules
 dist
 .tmp
 
+*.log
+
 # OS generated files #
 ######################
 .DS_Store
