@@ -29,10 +29,12 @@ var updateTestscenarios = function (test) {
   return new Promise(function (resolve, reject) {
     fs.readFile(path.join(test.source, "fixture", "manifest.json"), function(err, data) {
       if (err) {
-        reject(err);
+        if ("ENOENT" === err.code) {resolve(test);}
+        else {reject(err);}
+      } else {
+        test.fixture = JSON.parse(data);
+        resolve(test);
       }
-      test.fixture = JSON.parse(data);
-      resolve(test);
     });
   });
 };
@@ -56,7 +58,7 @@ var setupTest = function (name) {
 };
 
 var spawnTest = function (test) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     var result = null;
 
     var cp = require("child_process");
@@ -79,8 +81,8 @@ var spawnTest = function (test) {
         {test.result = result.result;}
         resolve(test);
       } else {
-        {test.result = result;}
-        reject(result.error || new Error("Failed to run the test."));
+        test.error = result.error || new Error("Failed to run the test.");
+        resolve(test);
       }
     });
 
@@ -100,14 +102,15 @@ var runTest = function (test) {
   // run the tests on the results
 };
 
-var OUTPUT_DIR = path.join(__dirname, "../.tmp");
-
 
 const examples = [
   "default",
   "absolute-path",
   "commons-chunk-plugin",
   "copy-webpack-plugin",
+];
+const failingExamples = [
+  "missing-files",
 ];
 
 describe("examples", function () {
@@ -126,5 +129,21 @@ describe("examples", function () {
         });
       });
     })(examples[i]);
+  }
+  for (var i = 0, len = failingExamples.length; i < len; ++i) {
+    (function (name) {
+      it("should fail the " +name+ " example.", function (done) {
+        this.timeout(2000);
+        this.slow(1200);
+        runTest(name).then(function (test) {
+          expect (test).to.not.haveOwnProperty("result");
+          expect (test).to.not.haveOwnProperty("fixture");
+          expect (test).to.haveOwnProperty("error");
+          done();
+        }).catch( function (err) {
+          done(err);
+        });
+      });
+    })(failingExamples[i]);
   }
 });
