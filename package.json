@@ -1,6 +1,6 @@
 {
   "name": "chrome-dev-webpack-plugin",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Adds chrome related development features to webpack. Helps with generating and synchronizing the manifest.json.",
   "main": "index.js",
   "scripts": {
