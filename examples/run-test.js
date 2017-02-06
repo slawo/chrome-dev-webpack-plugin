@@ -22,9 +22,7 @@ function runExample (test) {
     } catch(e) {
       reject(e);
     }
-    console.log("require webpack.config", options);
     webpack(options, function (err) {
-      console.log("webpack ran");
       if (err) {
         reject(err);
       } else {

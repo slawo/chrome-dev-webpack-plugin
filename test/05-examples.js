@@ -31,7 +31,6 @@ var updateTestscenarios = function (test) {
       if (err) {
         reject(err);
       }
-      console.log(data);
       test.fixture = JSON.parse(data);
       resolve(test);
     });
@@ -68,7 +67,6 @@ var spawnTest = function (test) {
 
     child.on("message", function(m) {
       // Receive results from child process
-      console.log(" ==> received: " + m);
       m = JSON.parse(m);
       result = m;
     });
@@ -77,7 +75,6 @@ var spawnTest = function (test) {
     child.send("Please up-case this string");
 
     child.on("close", function (code) {
-      console.log("child process exited with code " + code);
       if (0 === code) {
         {test.result = result.result;}
         resolve(test);
@@ -92,10 +89,8 @@ var spawnTest = function (test) {
 
 var runTest = function (test) {
   return setupTest(test).then(function (test) {
-    console.log(test);
     return test;
   }).then (spawnTest).then(function (test) {
-    console.log(test);
     return test;
   });
   // set cwd to the test folder
