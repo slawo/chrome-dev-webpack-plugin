@@ -10,25 +10,29 @@ Adds chrome related development features to webpack. Helps with generating and s
 
 ## install
 
+```bash
     npm install --save-dev chrome-dev-webpack-plugin
+```
 
 Add the plugin to your webpack configuration file:
 
-    //webpack.config.js
-    var ChromeDevPlugin = require("chrome-dev-webpack-plugin");
-    var path = require("path");
+```js
+//webpack.config.js
+var ChromeDevPlugin = require("chrome-dev-webpack-plugin");
+var path = require("path");
 
-    module.exports = {
-      context: path.join(__dirname, "src"),
-      entry:  {
-        background: [path.join(__dirname, "src", "background.js")],
-      },
-      output: {
-        path: path.join(__dirname, "dist"),
-        filename: "[name].bundle.js"
-      },
-      plugins: [new ChromeDevPlugin()]
-    }
+module.exports = {
+  context: path.join(__dirname, "src"),
+  entry:  {
+    background: [path.join(__dirname, "src", "background.js")],
+  },
+  output: {
+    path: path.join(__dirname, "dist"),
+    filename: "[name].bundle.js"
+  },
+  plugins: [new ChromeDevPlugin()]
+}
+```
 
 ## Features
 This plugin helps streamlining chrome extension development by providing features for maintaining and synchronizing manifest.json files.
@@ -54,63 +58,69 @@ Additionally if a resulting bundle ends-up being optimized (using `webpack.optim
 
 ## Options
 
-    //webpack.config.js
-    var ChromeDevPlugin = require("chrome-dev-webpack-plugin");
-    var path = require("path");
+```js
+//webpack.config.js
+var ChromeDevPlugin = require("chrome-dev-webpack-plugin");
+var path = require("path");
 
-    var manifestFile = "manifest.json";
-    var sourcePath = path.join(__dirname, "src");
-    var distPath = path.join(__dirname, "dist");
-    var sourceManifest = path.join(sourcePath, manifestFile); // ./src/manifest.json
+var manifestFile = "manifest.json";
+var sourcePath = path.join(__dirname, "src");
+var distPath = path.join(__dirname, "dist");
+var sourceManifest = path.join(sourcePath, manifestFile); // ./src/manifest.json
 
-    var plugins = [
-      new ChromeDevPlugin({
-        //The source manifest file you want to use for your extension (defaults to {$context}/"manifest.json")
-        entry:sourceManifest,
+var plugins = [
+  new ChromeDevPlugin({
+    //The source manifest file you want to use for your extension 
+    //(defaults to {$context}/"manifest.json")
+    entry:sourceManifest,
 
-        //The resulting manifest to emit (defaults to "manifest.json")
-        output:manifestFile,
-        
-        //The package.json file you want to use to sync data from
-        package:"./package.json",
+    //The resulting manifest to emit (defaults to "manifest.json")
+    output:manifestFile,
+    
+    //The package.json file you want to use to sync data from
+    package:"./package.json",
 
-        //Sets the logging functions
-        log:console.log,
-        warm:console.warn,
-        error:console.error,
+    //Sets the logging functions
+    log:console.log,
+    warm:console.warn,
+    error:console.error,
 
-        //Will set the version to 1.2.3 no matter what the manifest.json and the package.json contains
-        version: "1.2.3",
+    //Will set the version to 1.2.3 no matter what the manifest.json and
+    //the package.json contains
+    version: "1.2.3",
 
-        //Will not stamp the resulting manifest.json version with a build number (default behavior).
-        buildId:false,
+    //Will not stamp the resulting manifest.json version with a build 
+    //number (default behavior).
+    buildId:false,
 
-        //sets the build number to 10 and disables file and autoIncrement.
-        buildId: 10,
-        buildId: "10",
+    //sets the build number to 10 and disables file and autoIncrement.
+    buildId: 10,
+    buildId: "10",
 
-        //Will use the file "./.build" to read and save the build number.
-        //Will also auto-increment the build id for every fruitful webpack run.
-        buildId:true,
-        buildId:".build",
-        buildId: {
-          file:".build",
-          autoIncrement:true,
-        }
-      }),
-    ];
-
-    module.exports = {
-      context: path.resolve(sourcePath),
-      entry:  {
-        background: [path.join(sourcePath, "background.js")],
-      },
-      output: {
-        path: distPath,
-        filename: "[name].bundle.js"
-      },
-      plugins: plugins
+    //Will use the file "./.build" to read and save the build number.
+    //Will also auto-increment the build id for every successfull
+    //webpack run.
+    buildId:true,
+    buildId:".build",
+    buildId: {
+      file:".build",
+      autoIncrement:true,
     }
+  }),
+];
+
+module.exports = {
+  context: path.resolve(sourcePath),
+  entry:  {
+    background: [path.join(sourcePath, "background.js")],
+  },
+  output: {
+    path: distPath,
+    filename: "[name].bundle.js"
+  },
+  plugins: plugins
+}
+```
 
 ## options
 
@@ -137,10 +147,11 @@ To simplify development and deployment the build id can be automatically generat
 If you pass a build number instead, the build number will be used as is.
 - `buildId`: activates the stamping of the version with a build number. 
 
-
-    config = {
-      buildId = process.env.TRAVIS_BUILD_NUMBER || "./.BUILDID"
-    }
+```js
+config = {
+  buildId = process.env.TRAVIS_BUILD_NUMBER || "./.BUILDID"
+}
+```
 
 ## default manifest.json
 If you don't set the `entry` option the plugin will try to find a manifest.json file:
@@ -174,18 +185,17 @@ Permission to use, copy, modify, and/or distribute this software for any purpose
 
 THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-
-[travis-image]: https://travis-ci.org/slawo/chrome-dev-webpack-plugin.svg?branch=master
+[travis-image]: https://img.shields.io/travis/slawo/chrome-dev-webpack-plugin.svg?branch=master&style=flat-square
 [travis-url]: https://travis-ci.org/slawo/chrome-dev-webpack-plugin
 
-[dependency-image]: https://img.shields.io/gemnasium/slawo/chrome-dev-webpack-plugin.svg
+[dependency-image]: https://img.shields.io/gemnasium/slawo/chrome-dev-webpack-plugin.svg?style=flat-square
 [dependency-url]: https://gemnasium.com/slawo/chrome-dev-webpack-plugin
 
-[snyk-image]: https://snyk.io/test/github/slawo/chrome-dev-webpack-plugin/master/badge.svg
+[snyk-image]: https://snyk.io/test/github/slawo/chrome-dev-webpack-plugin/master/badge.svg?style=flat-square
 [snyk-url]: https://snyk.io/test/github/slawo/chrome-dev-webpack-plugin
 
 [nodei-image]: https://nodei.co/npm/chrome-dev-webpack-plugin.png
 [npmjs-url]: https://www.npmjs.com/package/chrome-dev-webpack-plugin
 
-[npm-license-image]: https://img.shields.io/npm/l/chrome-dev-webpack-plugin.svg
-[npm-version-image]: https://img.shields.io/npm/v/chrome-dev-webpack-plugin.svg
+[npm-license-image]: https://img.shields.io/npm/l/chrome-dev-webpack-plugin.svg?style=flat-square
+[npm-version-image]: https://img.shields.io/npm/v/chrome-dev-webpack-plugin.svg?style=flat-square
