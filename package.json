@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js ./",
-    "test-travis": "npm run test",
-    "test": "./node_modules/mocha/bin/mocha test"
+    "test:travis": "npm run test",
+    "test:dev": "npm run test; ./node_modules/nyc/bin/nyc.js report --reporter=lcov",
+    "test": "./node_modules/nyc/bin/nyc.js ./node_modules/mocha/bin/_mocha test"
   },
   "repository": {
     "type": "git",
@@ -39,8 +40,10 @@
     "chai-as-promised": "^6.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "eslint": "^3.14.0",
+    "istanbul": "^0.4.5",
     "mkdirp": "^0.5.1",
     "mocha": "^3.2.0",
+    "sinon-chai": "^2.8.0",
     "webpack": "^1.14.0"
   }
 }

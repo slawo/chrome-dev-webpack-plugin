@@ -41,4 +41,25 @@ describe("tools", function () {
       });
     });
   });
+  describe("setLoader", function () {
+    it("should convert a string", function () {
+      var result = tools.setLoader("file");
+      expect(result.loadJson).to.be.a.function;
+      expect(result.hasLatestData).to.be.a.function;
+    });
+    it("should load a JsonLoader", function () {
+      var result = tools.setLoader(new (require("../lib/json-loader"))());
+      expect(result.loadJson).to.be.a.function;
+      expect(result.hasLatestData).to.be.a.function;
+    });
+    it("should load a valid object", function () {
+      var result = tools.setLoader({loadJson:function(){}, hasLatestData:function() {} });
+      expect(result.loadJson).to.be.a.function;
+      expect(result.hasLatestData).to.be.a.function;
+    });
+    it("should fail with an invalid object", function () {
+      var result = tools.setLoader({});
+      expect(result).to.be.undefined;
+    });
+  });
 });

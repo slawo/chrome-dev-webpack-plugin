@@ -1,5 +1,6 @@
 var expect = require("chai").expect;
 var fs = require("fs");
+var path = require("path");
 var temp = require("./tools/temp");
 var VersionStamp = require("../lib/version-stamp");
 
@@ -81,6 +82,43 @@ describe("version-stamp VersionStamp", function () {
         expect(result).to.equal(expected);
         expect(result).to.be.a(typeof expected);
       });
+    });
+  });
+  describe("stampVersion: {buildId:undefined}", function () {
+    var vs = new VersionStamp ({buildId:undefined});
+    it("should fail tagging the version", function () {
+      getVersion.forEach(function (tuples) {
+        var input = tuples[0];
+        var expected = tuples[1];
+
+        var result = vs.stampVersion(input);
+        expect(result).to.equal(expected);
+        expect(result).to.be.a(typeof expected);
+      });
+    });
+  });
+  describe("stampVersion: {buildId:true}", function () {
+    var filename;
+    before("create a temporary build file", function (done) {
+      filename = path.normalize(".build");
+      fs.unlink(filename, function (err) {
+        fs.writeFile(filename, "1", function (err) {
+          done(err);
+        });
+      });
+    });
+    after("delete the temporary build file", function (done) {
+      fs.unlink(filename);
+      done();
+    });
+    it("should increment the build id for each run.", function () {
+      var input = "1.2.3";
+      var vs = new VersionStamp ({buildId:true});
+      for (var i = 0; i < 10; ++i) {
+        var expected = input+"."+(i+2);
+        var result = vs.stampVersion(input);
+        expect(result).to.equal(expected);
+      }
     });
   });
   describe("stampVersion: {buildId:\"filename\"}", function () {

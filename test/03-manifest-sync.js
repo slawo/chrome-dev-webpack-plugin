@@ -126,6 +126,13 @@ describe("ManifestSync", function () {
         ]);
       });
     });
+    it ("should fail on missing files", function () {
+      var sync = new ManifestSync();
+      var syncResult = sync.sync();
+      return mPromise.all([
+        expect(syncResult).to.be.rejected,
+      ]);
+    });
     it ("should succeed on missing package", function () {
       return initSync(defaultManifest).then(function (sync) {
         var syncResult = sync.sync();

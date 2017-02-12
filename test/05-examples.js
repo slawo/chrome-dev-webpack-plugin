@@ -46,6 +46,9 @@ var setupTest = function (name) {
       name: name,
     };
   }
+  if ("object" !== typeof test) {
+    return Promise.reject(new Error("Could not setup the test with name " + name));
+  }
   return Promise.resolve(test).then(function (test) {
     return updateTestPath(test);
   }).then(function(test) {

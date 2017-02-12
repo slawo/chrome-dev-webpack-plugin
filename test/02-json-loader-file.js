@@ -1,5 +1,8 @@
 "use strict";
-var expect = require("chai").expect;
+var chai = require("chai");
+var expect = chai.expect;
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
 
 var fs = require("fs");
 var path = require("path");
@@ -20,7 +23,7 @@ describe("JsonLoaderFile", function () {
   after("cleanup the environment", function (done) {
     fs.unlink(fileName, (err) => {
       if(err) {
-        this.warn(err);
+        console.warn(err);
         done();
       }
       else {fs.unlink(folder, (err) => {
@@ -77,6 +80,15 @@ describe("JsonLoaderFile", function () {
         expect(hasLatest).to.be.true;
         done();
       }).catch(done);
+    });
+    it("should fail when no file is given.", function () {
+      var emptyLoader = new JsonLoaderFile();
+      var resultHas = emptyLoader.hasLatestData();
+      var resultLoad = emptyLoader.loadJson();
+      return Promise.all([
+        expect(resultHas).to.be.rejected,
+        expect(resultLoad).to.be.rejected,
+      ]);
     });
   });
 });
