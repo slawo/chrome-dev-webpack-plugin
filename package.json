@@ -40,10 +40,9 @@
     "chai-as-promised": "^6.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "eslint": "^3.14.0",
-    "istanbul": "^0.4.5",
     "mkdirp": "^0.5.1",
     "mocha": "^3.2.0",
-    "sinon-chai": "^2.8.0",
+    "nyc": "^10.1.2",
     "webpack": "^1.14.0"
   }
 }
