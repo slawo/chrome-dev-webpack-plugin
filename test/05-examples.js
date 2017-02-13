@@ -111,6 +111,7 @@ const examples = [
   "absolute-path",
   "commons-chunk-plugin",
   "copy-webpack-plugin",
+  "no-context",
 ];
 const failingExamples = [
   "missing-files",

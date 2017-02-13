@@ -1,0 +1,10 @@
+{
+  "name": "webpack-chrome-dev-plugin-example-default",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Slawomir CALUCH",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^1.14.0"
+  }
+}
