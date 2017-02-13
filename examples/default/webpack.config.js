@@ -9,8 +9,7 @@ var distPath = path.join(__dirname, "dist/webpack-" + webpackMajorVersion);
 
 //The plugin we are testing!
 var plugins = [
-  new WebpackChromeDevPlugin({
-  }),
+  new WebpackChromeDevPlugin(),
 ];
 
 module.exports = {
