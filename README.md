@@ -35,7 +35,7 @@ module.exports = {
 ```
 
 ## Features
-This plugin helps streamlining chrome extension development by providing features for maintaining and synchronizing manifest.json files.
+This plugin helps streamlining chrome extension development by providing features for maintaining and synchronizing the manifest.json.
 
 ### manifest.json
 By default the plugin expects a `manifest.json` file to be present in the `context` path. It will generate a new manifest.json in the `output.path`.
@@ -55,6 +55,32 @@ Optionally the 4th field in `version` can be filled with a build number. It can 
 The plugin will automatically try to map resources with resulting bundles (ex: `background.js` to `background.bundle.js`).
 
 Additionally if a resulting bundle ends-up being optimized (using `webpack.optimize.CommonsChunkPlugin`) all the resulting scripts lists will have the optimized bundles prepended (ex: `['background.js']` to `['vendor.bundle.js', 'background.bundle.js']`).
+
+### example
+
+```js
+{
+  "manifest_version": 2,
+  "background": {
+    "scripts": [
+      "background.js" // -> will be translated to "background.bundle.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.js" // -> will be translated to "content.bundle.js"
+      ]
+    }
+  ],
+  // The plugin will add the following keys from package.json:
+  // - "name": "webpack-chrome-dev-plugin-example-default",
+  // - "version": "1.0.0"
+}
+```
 
 ## Options
 
