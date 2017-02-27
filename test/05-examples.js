@@ -109,9 +109,11 @@ var runTest = function (test) {
 const examples = [
   "default",
   "absolute-path",
+  "fold-required-files",
   "commons-chunk-plugin",
   "copy-webpack-plugin",
   "no-context",
+  "no-map",
 ];
 const failingExamples = [
   "missing-files",

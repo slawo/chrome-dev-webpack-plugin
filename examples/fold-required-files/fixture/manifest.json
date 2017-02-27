@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "description": "Tests the capacity to properly patch the manifest.json when using the webpack.optimize.CommonsChunkPlugin plugin",
+  "background": {
+    "scripts": [
+      "background.bundle.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.bundle.js"
+      ]
+    }
+  ],
+  "name": "webpack-chrome-dev-plugin-example-commons-chunk-plugin",
+  "version": "1.0.0"
+}
