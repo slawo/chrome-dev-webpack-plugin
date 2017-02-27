@@ -2,12 +2,12 @@
   "manifest_version": 2,
   "description": "Tests the capacity to properly patch the manifest.json when using the webpack.optimize.CommonsChunkPlugin plugin",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["common.js", "commonOptOut.js", "background.js"]
   },
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["content.js"]
+      "js": ["common.js", "commonOptOut.js", "content.js"]
     }
   ]
 }

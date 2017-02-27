@@ -4,6 +4,8 @@
   "background": {
     "scripts": [
       "vendor.bundle.js",
+      "commonOptOut.bundle.js",
+      "common.bundle.js",
       "background.bundle.js"
     ]
   },
@@ -14,6 +16,8 @@
       ],
       "js": [
         "vendor.bundle.js",
+        "commonOptOut.bundle.js",
+        "common.bundle.js",
         "content.bundle.js"
       ]
     }

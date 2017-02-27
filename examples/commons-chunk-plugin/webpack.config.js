@@ -19,15 +19,21 @@ var plugins = [
     package:path.join(__dirname,"./package.json"),
   }),
   //Testing CommonsChunkPlugin
-  new webpack.optimize.CommonsChunkPlugin( {name:"vendor", filename:"vendor.bundle.js"}),
+  new webpack.optimize.CommonsChunkPlugin( {names:[
+    "common",
+    "commonOptOut",
+    "vendor",
+  ]}),
 ];
 
 module.exports = {
   context: path.resolve(sourcePath),
   entry:  {
-    background: [path.join(sourcePath, "background.js")],
+    background: ["./background.js"],
     content: [path.join(sourcePath, "content.js")],
     //Testing CommonsChunkPlugin
+    common: [path.join(sourcePath, "common.js")],
+    commonOptOut: [path.join(sourcePath, "commonOptOut.js")],
     vendor: [path.join(sourcePath, "test.js")],
   },
   output: {
