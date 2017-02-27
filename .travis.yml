@@ -16,6 +16,6 @@ node_js:
   - "5.0"
   - "4"
   - "4.0"
-after_success: 
-  - 'cat ./coverage/lcov.info | ./node_modules/.bin/coveralls'
+after_success:
+  - './node_modules/nyc/bin/nyc.js report --reporter=text-lcov | ./node_modules/.bin/coveralls'
   
