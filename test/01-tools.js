@@ -62,4 +62,30 @@ describe("tools", function () {
       expect(result).to.be.undefined;
     });
   });
+
+  describe("getLogs", function () {
+    it("should set all functions to console.log", function () {
+      var logs = tools.getLogs({log:console.log});
+      expect(logs).to.be.an("object");
+      expect(logs).to.have.all.keys("log", "warn", "error");
+      expect(logs.log).to.equal(console.log);
+      expect(logs.warn).to.equal(console.log);
+      expect(logs.error).to.equal(console.log);
+    });
+    it("should set all functions to a function by default", function () {
+      var logs = tools.getLogs();
+      expect(logs).to.be.an("object");
+      expect(logs).to.have.all.keys("log", "warn", "error");
+      expect(logs.log).to.be.a("function");
+      expect(logs.warn).to.be.a("function");
+      expect(logs.error).to.be.a("function");
+    });
+    it("should set logs to console", function () {
+      var logs = tools.getLogs({log:console});
+      expect(logs).to.be.an("object");
+      expect(logs.log).to.equal(console.log);
+      expect(logs.warn).to.equal(console.warn);
+      expect(logs.error).to.equal(console.error);
+    });
+  });
 });
