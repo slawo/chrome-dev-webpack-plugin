@@ -217,6 +217,9 @@ Planned features:
 If you find a bug please use the bug tracker at https://github.com/slawo/chrome-dev-webpack-plugin/issues and if possible provide a merge request with either a fix or a test case in the examples folder.
 
 ## Changelog
+ - 0.4.0
+  - improved compatibility with `webpack.optimize.CommonsChunkPlugin`
+  - improved reliability when mapping files to bundles
  - 0.3.3
   - bug fixes
   - new tests
