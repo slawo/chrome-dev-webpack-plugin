@@ -129,13 +129,13 @@ var plugins = [
     buildId: 10,
     buildId: "10",
 
-    //Will use the file "./.build" to read and save the build number.
+    //Will use the file "./.build-id" to read and save the build number.
     //Will also auto-increment the build id for every successfull
     //webpack run.
     buildId:true,
-    buildId:".build",
+    buildId:".build-id",
     buildId: {
-      file:".build",
+      file:".build-id",
       autoIncrement:true,
     }
   }),
